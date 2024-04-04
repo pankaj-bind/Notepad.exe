@@ -4,13 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.awt.font.TextAttribute; // Add this import statement
-
+import java.awt.font.TextAttribute;
 
 public class NotePad extends JFrame implements ActionListener, WindowListener {
     JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     Map<JScrollPane, File> fileMap = new HashMap<>();
-    JTextArea textArea; // Added for text editing features
+    JTextArea textArea;
 
     public NotePad() {
         Font fnt = new Font("Arial", Font.PLAIN, 15);
@@ -39,10 +38,10 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         jmFile.addSeparator();
         createMenuItem(jmFile, "Exit");
 
-        createMenuItem(jmEdit, "Cut");
         createMenuItem(jmEdit, "Copy");
         createMenuItem(jmEdit, "Paste");
-        jmEdit.addSeparator(); // Add separator for readability
+        createMenuItem(jmEdit, "Cut");
+        jmEdit.addSeparator();
         createMenuItem(jmEdit, "Bold");
         createMenuItem(jmEdit, "Italic");
         createMenuItem(jmEdit, "Underline");
@@ -53,13 +52,14 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         createMenuItem(jmHelp, "About Notepad");
 
         createMenuItem(jmAlgorithms, "Sort Numbers");
-        createMenuItem(jmAlgorithms, "Reverse Text");
         createMenuItem(jmAlgorithms, "Count Words");
         createMenuItem(jmAlgorithms, "Find Duplicates");
         createMenuItem(jmAlgorithms, "Word Frequency");
-        createMenuItem(jmAlgorithms, "Reverse String");
+
         createMenuItem(jmAlgorithms, "Check Palindrome");
+
         createMenuItem(jmAlgorithms, "String Search");
+        createMenuItem(jmAlgorithms, "Reverse String");
 
         jmb.add(jmFile);
         jmb.add(jmEdit);
@@ -72,15 +72,39 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         setSize(800, 600);
         setTitle("Untitled.txt - Notepad");
 
-        // Added JTextArea for text editing
         textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
         con.add(scrollPane, BorderLayout.SOUTH);
 
-        // Open the first file by default
-        newFile("Untitled");
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(createToolBar(), BorderLayout.CENTER);
+        con.add(topPanel, BorderLayout.NORTH);
 
         setVisible(true);
+    }
+
+    public JToolBar createToolBar() {
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        addButton(toolBar, "New", "Add File", "New File");
+        addButton(toolBar, "Sort Numbers", "Sort Numbers", "Sort Numbers");
+        addButton(toolBar, "Count Words", "Count Words", "Count Words");
+        addButton(toolBar, "Find Duplicates", "Find Duplicate", "Find Duplicates");
+        addButton(toolBar, "Word Frequency", "Word Frequency", "Word Frequency");
+        addButton(toolBar, "Check Palindrome", "Check Palindrome", "Check Palindrome");
+        addButton(toolBar, "String Search", "String Search", "String Search");
+        addButton(toolBar, "Reverse String", "Reverse String", "Reverse String");
+
+        return toolBar;
+    }
+
+    public void addButton(JToolBar toolBar, String actionCommand, String label, String toolTipText) {
+        JButton button = new JButton(label);
+        button.setActionCommand(actionCommand);
+        button.addActionListener(this);
+        button.setToolTipText(toolTipText);
+        toolBar.add(button);
     }
 
     public void createMenuItem(JMenu jm, String txt) {
@@ -106,7 +130,8 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         } else if (command.equals("Cut")) {
             textArea.cut();
         } else if (command.equals("About Notepad")) {
-            JOptionPane.showMessageDialog(this, "Created by: Geeks for Geeks (https://www.geeksforgeeks.org/)", "Notepad", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Created by: Pankaj Kumar Bind", "Notepad",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (command.equals("Sort Numbers")) {
             sortNumbers();
         } else if (command.equals("Reverse Text")) {
@@ -124,12 +149,12 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         } else if (command.equals("String Search")) {
             stringSearch();
         } else if (command.equals("Bold")) {
-            textArea.setFont(textArea.getFont().deriveFont(Font.BOLD));
+            Font currentFont = textArea.getFont();
+            textArea.setFont(currentFont.deriveFont(Font.BOLD));
         } else if (command.equals("Italic")) {
-            textArea.setFont(textArea.getFont().deriveFont(Font.ITALIC));
+            Font currentFont = textArea.getFont();
+            textArea.setFont(currentFont.deriveFont(Font.ITALIC));
         } else if (command.equals("Underline")) {
-            // Underline is set using HTML tags
-            textArea.setFont(textArea.getFont().deriveFont(Font.PLAIN));
             Font currentFont = textArea.getFont();
             Map<TextAttribute, Object> attributes = new HashMap<>(currentFont.getAttributes());
             attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
@@ -194,7 +219,8 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         newTextArea.setFont(new Font("Arial", Font.PLAIN, 15));
         newTextArea.setMargin(new Insets(5, 5, 5, 5)); // Adding margins for better appearance
         JScrollPane newScrollPane = new JScrollPane(newTextArea);
-        newScrollPane.setPreferredSize(new Dimension(newScrollPane.getPreferredSize().width, 100)); // Decrease the height here
+        newScrollPane.setPreferredSize(new Dimension(newScrollPane.getPreferredSize().width, 100)); // Decrease the
+                                                                                                    // height here
         tabbedPane.addTab(fileName, newScrollPane);
         tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1, new ButtonTabComponent(tabbedPane));
     }
