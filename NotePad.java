@@ -48,6 +48,7 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         createMenuItem(jmEdit, "Align Left");
         createMenuItem(jmEdit, "Align Center");
         createMenuItem(jmEdit, "Align Right");
+        createMenuItem(jmEdit, "Remove Extra Spaces"); // New menu item
 
         createMenuItem(jmHelp, "About Notepad");
 
@@ -55,9 +56,7 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         createMenuItem(jmAlgorithms, "Count Words");
         createMenuItem(jmAlgorithms, "Find Duplicates");
         createMenuItem(jmAlgorithms, "Word Frequency");
-
         createMenuItem(jmAlgorithms, "Check Palindrome");
-
         createMenuItem(jmAlgorithms, "String Search");
         createMenuItem(jmAlgorithms, "Reverse String");
 
@@ -93,8 +92,9 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         addButton(toolBar, "Find Duplicates", "Find Duplicate", "Find Duplicates");
         addButton(toolBar, "Word Frequency", "Word Frequency", "Word Frequency");
         addButton(toolBar, "Check Palindrome", "Check Palindrome", "Check Palindrome");
-        addButton(toolBar, "String Search", "String Search", "String Search");
         addButton(toolBar, "Reverse String", "Reverse String", "Reverse String");
+        addButton(toolBar, "String Search", "String Search", "String Search");    
+        addButton(toolBar, "Remove Extra Spaces", "Remove Extra Spaces", "Remove Extra Spaces"); // New button
 
         return toolBar;
     }
@@ -130,8 +130,7 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         } else if (command.equals("Cut")) {
             textArea.cut();
         } else if (command.equals("About Notepad")) {
-            JOptionPane.showMessageDialog(this, "Created by: Pankaj Kumar Bind", "Notepad",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Created by: Pankaj Kumar Bind", "Notepad", JOptionPane.INFORMATION_MESSAGE);
         } else if (command.equals("Sort Numbers")) {
             sortNumbers();
         } else if (command.equals("Reverse Text")) {
@@ -148,6 +147,8 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
             checkPalindrome();
         } else if (command.equals("String Search")) {
             stringSearch();
+        } else if (command.equals("Remove Extra Spaces")) { // Handle remove extra spaces button
+            removeExtraSpaces();
         } else if (command.equals("Bold")) {
             Font currentFont = textArea.getFont();
             textArea.setFont(currentFont.deriveFont(Font.BOLD));
@@ -168,6 +169,12 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         }
     }
 
+    public void removeExtraSpaces() {
+        JTextArea currentTextArea = getCurrentTextArea();
+        String text = currentTextArea.getText();
+        text = text.replaceAll("\\s+", " ").trim(); // Replace multiple spaces with a single space
+        currentTextArea.setText(text);
+    }
     public void openFile() {
         JFileChooser jfc = new JFileChooser();
         int returnValue = jfc.showOpenDialog(null);
@@ -219,8 +226,7 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         newTextArea.setFont(new Font("Arial", Font.PLAIN, 15));
         newTextArea.setMargin(new Insets(5, 5, 5, 5)); // Adding margins for better appearance
         JScrollPane newScrollPane = new JScrollPane(newTextArea);
-        newScrollPane.setPreferredSize(new Dimension(newScrollPane.getPreferredSize().width, 100)); // Decrease the
-                                                                                                    // height here
+        newScrollPane.setPreferredSize(new Dimension(newScrollPane.getPreferredSize().width, 100)); // Decrease the height here
         tabbedPane.addTab(fileName, newScrollPane);
         tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1, new ButtonTabComponent(tabbedPane));
     }
@@ -245,7 +251,7 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
                     // Skip non-numeric values
                 }
             }
-            Arrays.sort(intNumbers);
+            mergeSort(intNumbers, 0, intNumbers.length - 1);
             for (int num : intNumbers) {
                 sortedText.append(num).append(" ");
             }
@@ -253,6 +259,55 @@ public class NotePad extends JFrame implements ActionListener, WindowListener {
         }
 
         currentTextArea.setText(sortedText.toString());
+    }
+
+    private void mergeSort(int[] arr, int left, int right) {
+        if (left < right) {
+            int mid = (left + right) / 2;
+            mergeSort(arr, left, mid);
+            mergeSort(arr, mid + 1, right);
+            merge(arr, left, mid, right);
+        }
+    }
+
+    private void merge(int[] arr, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        int[] leftArr = new int[n1];
+        int[] rightArr = new int[n2];
+
+        for (int i = 0; i < n1; ++i) {
+            leftArr[i] = arr[left + i];
+        }
+        for (int j = 0; j < n2; ++j) {
+            rightArr[j] = arr[mid + 1 + j];
+        }
+
+        int i = 0, j = 0;
+        int k = left;
+        while (i < n1 && j < n2) {
+            if (leftArr[i] <= rightArr[j]) {
+                arr[k] = leftArr[i];
+                i++;
+            } else {
+                arr[k] = rightArr[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            arr[k] = leftArr[i];
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            arr[k] = rightArr[j];
+            j++;
+            k++;
+        }
     }
 
     public void reverseText() {
